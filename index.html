@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="CIH 2026">
+<title>CIH — Programme Réseau 2026</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152.png">
+<link rel="apple-touch-icon" sizes="180x180" href="icons/icon-180.png">
+<meta name="apple-touch-fullscreen" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0C1F3F">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;overflow:hidden;background:#0C1F3F;font-family:"Helvetica Neue",-apple-system,system-ui,sans-serif}
+#app{width:100%;height:100%;display:flex;flex-direction:column;max-width:430px;margin:0 auto;position:relative;overflow:hidden}
+.screen{position:absolute;inset:0;display:flex;flex-direction:column;background:#F0F2F5;transition:opacity .2s}
+.screen.hidden{display:none}
+.scroll{overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;flex:1}
+/* Status bar */
+.sbar{display:flex;justify-content:space-between;align-items:center;padding:12px 20px 8px;position:absolute;top:0;left:0;right:0;z-index:20}
+.sbar .time{font-size:15px;font-weight:600;color:#fff}
+.sbar .icons{display:flex;gap:6px;align-items:center}
+/* Header */
+.hdr{background:linear-gradient(135deg,#0C1F3F,#152D54);padding:52px 16px 16px;color:#fff;flex-shrink:0;position:relative;overflow:hidden}
+.hdr::after{content:'';position:absolute;top:-70px;right:-70px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.04)}
+.hdr-inner{display:flex;align-items:center;gap:12;position:relative;z-index:1}
+.hdr-logo{width:40px;height:40px;border-radius:12px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;color:#fff;flex-shrink:0}
+.hdr-back{width:36px;height:36px;border-radius:18px;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
+.hdr-titles{flex:1;min-width:0}
+.hdr-title{font-size:17px;font-weight:800;letter-spacing:-.4px;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hdr-sub{font-size:11px;opacity:.65;margin-top:2px}
+/* Tabbar */
+.tabbar{background:rgba(255,255,255,.96);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:.5px solid #E2E8F0;display:flex;padding:10px 12px 24px;flex-shrink:0;z-index:40}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer}
+.tab-label{font-size:10px;font-weight:500;color:#64748B}
+.tab.active .tab-label{font-weight:700;color:#C0392B}
+/* Cards */
+.card{background:#fff;border-radius:14px;border:1px solid #E2E8F0;padding:14px}
+.card-sm{background:#fff;border-radius:12px;border:1px solid #E2E8F0;padding:12px 14px}
+/* Progress bar */
+.pbar-wrap{height:6px;background:#F1F5F9;border-radius:6px;overflow:hidden}
+.pbar-fill{height:100%;border-radius:6px;transition:width .4s}
+/* Badge */
+.badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;padding:3px 8px;border-radius:99px}
+/* Grid */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+/* Inputs */
+input,textarea{font-family:inherit;outline:none;-webkit-appearance:none;appearance:none}
+input[type=text]{width:100%;height:44px;padding:0 14px;border-radius:12px;border:1.5px solid #E2E8F0;background:#fff;font-size:14px;color:#0F172A}
+input[type=text]:focus{border-color:#2980B9}
+textarea{width:100%;min-height:70px;padding:12px;border-radius:12px;border:1.5px solid #E2E8F0;background:#fff;font-size:13px;color:#0F172A;resize:vertical}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:4px;background:#E2E8F0;outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:#C0392B;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.2)}
+/* Toast */
+#toast{position:fixed;top:70px;left:50%;transform:translateX(-50%);background:#0C1F3F;color:#fff;padding:10px 18px;border-radius:12px;font-size:12px;font-weight:700;z-index:999;box-shadow:0 8px 24px rgba(0,0,0,.3);white-space:nowrap;display:none}
+/* Home indicator */
+.home-ind{position:absolute;bottom:0;left:0;right:0;height:34px;display:flex;justify-content:center;align-items:flex-end;padding-bottom:8px;pointer-events:none;z-index:60}
+.home-ind-bar{width:139px;height:5px;border-radius:100px;background:rgba(0,0,0,.2)}
+.home-ind-bar.light{background:rgba(255,255,255,.7)}
+/* Alert banner */
+.alert-banner{margin:12px 14px 0;padding:11px 14px;border-radius:12px;background:#FEF2F2;border:1px solid rgba(239,68,68,.2);display:flex;align-items:center;gap:10;cursor:pointer}
+/* Segment control */
+.seg{display:flex;background:#E5E9EF;border-radius:10px;padding:3px}
+.seg-item{flex:1;text-align:center;padding:7px 0;font-size:13px;font-weight:600;border-radius:8px;cursor:pointer;color:#64748B;transition:all .2s}
+.seg-item.active{background:#fff;color:#0C1F3F;font-weight:700;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+/* Filter chips */
+.chips{display:flex;gap:7px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding:10px 14px 0}
+.chips::-webkit-scrollbar{display:none}
+.chip{padding:5px 12px;border-radius:99px;font-size:12px;font-weight:600;white-space:nowrap;flex-shrink:0;cursor:pointer;display:flex;align-items:center;gap:5px}
+/* Row */
+.drow{display:flex;padding:11px 14px;border-bottom:.5px solid #E2E8F0;align-items:center}
+.drow:last-child{border-bottom:none}
+.drow-k{font-size:12px;color:#64748B;flex:1}
+.drow-v{font-size:13px;font-weight:600;color:#0F172A}
+/* SelectGrid */
+.selgrid{display:grid;gap:7px}
+.selgrid-item{padding:9px 10px;border-radius:10px;border:1.5px solid #E2E8F0;background:#fff;color:#475569;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:7px;transition:all .15s}
+.selgrid-item.sel{border-color:#0C1F3F;background:#0C1F3F;color:#fff}
+/* CTA bar */
+.cta-bar{position:absolute;bottom:0;left:0;right:0;padding:10px 14px 24px;background:rgba(255,255,255,.96);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:.5px solid #E2E8F0;display:flex;gap:10px;z-index:50}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div id="toast"></div>
+</div>
+
+<script>
+// ─── DATA ──────────────────────────────────────────────────────────────────
+
+const CIH = {
+  navy:'#0C1F3F', navyMid:'#152D54', red:'#C0392B', blue:'#2980B9',
+  green:'#10B981', greenBg:'#ECFDF5', amber:'#F59E0B', amberBg:'#FFFBEB',
+  violet:'#8B5CF6', violetBg:'#F5F3FF', redSoft:'#FEF2F2', blueBg:'#EFF6FF',
+  indigo:'#6366F1', indigoBg:'#EEF2FF', slate:'#94A3B8', slateBg:'#F8FAFC',
+  ink:'#0F172A', ink2:'#475569', ink3:'#64748B', line:'#E2E8F0', bg:'#F0F2F5',
+};
+
+const STATUSES = {
+  exploit:{ l:'En Exploitation', c:CIH.green,  b:CIH.greenBg,  icon:'✓'  },
+  livree: { l:'Livrée DPAL',     c:CIH.blue,   b:CIH.blueBg,   icon:'📦' },
+  travaux:{ l:'Travaux',         c:CIH.amber,  b:CIH.amberBg,  icon:'🔨' },
+  admin:  { l:'Phase Admin',     c:CIH.violet, b:CIH.violetBg, icon:'📋' },
+  prep:   { l:'Préparation',     c:CIH.indigo, b:CIH.indigoBg, icon:'○'  },
+  bloque: { l:'Bloqué',          c:'#EF4444',  b:CIH.redSoft,  icon:'⚠'  },
+  etudes: { l:'Études',          c:CIH.slate,  b:CIH.slateBg,  icon:'◐'  },
+};
+const SK = ['exploit','livree','travaux','admin','prep','bloque','etudes'];
+
+const SEED = [
+  {id:1, prog:'NA',ag:'Sidi Maârouf Al Moustakbal',ty:'Acquisition',pct:100,liv:'Jan 2026', st:'exploit',cdp:'Jabir',    bi:'BI 2024'},
+  {id:2, prog:'NA',ag:'Centre BP Casa Centre',     ty:'Location',   pct:100,liv:'Jan 2026', st:'exploit',cdp:'Jabir',    bi:'BI 2024'},
+  {id:3, prog:'NA',ag:'Bouskoura II',              ty:'Acquisition',pct:35, liv:'Juin 2026',st:'bloque', cdp:'Jabir',    bi:'BI 2025',blocage:'Avis défavorable – syndic requis pour démolition mur',action:'Commission 31/03/2026'},
+  {id:4, prog:'NA',ag:'Tanger Casabarata',         ty:'Location',   pct:78, liv:'Mars 2026',st:'livree', cdp:'Jabir',    bi:'BI 2025'},
+  {id:5, prog:'NA',ag:'Villa Dakhla',              ty:'Acquisition',pct:20, liv:'Sept 2026',st:'bloque', cdp:'Belbane',  bi:'BI 2025',blocage:'Avis défavorable – intervention vendeur agence urbaine',action:'Relancer propriétaire'},
+  {id:6, prog:'NA',ag:'Ahfir',                     ty:'Location',   pct:55, liv:'Mai 2026', st:'admin',  cdp:'Essamlali',bi:'BI 2025'},
+  {id:7, prog:'NA',ag:'Casa Hadj Fateh 2',         ty:'Acquisition',pct:42, liv:'Juil 2026',st:'prep',   cdp:'Essamlali',bi:'BI 2025'},
+  {id:8, prog:'NA',ag:'Marrakech Guéliz Nord',     ty:'Location',   pct:68, liv:'Avril 2026',st:'livree',cdp:'El Morjani',bi:'BI 2026'},
+  {id:9, prog:'NA',ag:'Rabat Agdal',               ty:'Acquisition',pct:50, liv:'Mai 2026', st:'admin',  cdp:'Amrani',   bi:'BI 2026'},
+  {id:10,prog:'NA',ag:'Oujda Centre',              ty:'Location',   pct:15, liv:'Oct 2026', st:'etudes', cdp:'El Morjani',bi:'BI 2026'},
+  {id:11,prog:'NA',ag:'Fès Atlas',                 ty:'Acquisition',pct:10, liv:'Nov 2026', st:'etudes', cdp:'Amrani',   bi:'BI 2026'},
+  {id:12,prog:'NA',ag:'Kénitra Mimosa',            ty:'Location',   pct:25, liv:'Sept 2026',st:'prep',   cdp:'Jabir',    bi:'BI 2026'},
+  {id:20,prog:'RT',ag:'Casa Sidi Maârouf',         ty:'CIH',        pct:100,liv:'24 Jan 2026',st:'exploit',cdp:'Jabir',  bi:'BI 2023'},
+  {id:21,prog:'RT',ag:'Rabat Bab El Had',          ty:'CIH',        pct:100,liv:'Fév 2026', st:'exploit',cdp:'Jabir',    bi:'BI 2024'},
+  {id:22,prog:'RT',ag:'Rabat Akkari',              ty:'CIH',        pct:45, liv:'Mai 2026', st:'bloque', cdp:'Jabir',    bi:'BI 2025',blocage:'Avis défavorable – dossier redéposé',action:'Suivre commission'},
+  {id:23,prog:'RT',ag:'Casa Palmier',              ty:'Partage',    pct:30, liv:'Juin 2026',st:'bloque', cdp:'Belbane',  bi:'BI 2025',blocage:'Manque Accord Syndic + AJARINVEST',action:'Obtenir accords'},
+  {id:24,prog:'RT',ag:'Marrakech Daoudiate I',     ty:'CIH',        pct:25, liv:'Juil 2026',st:'bloque', cdp:'Belbane',  bi:'BI 2025',blocage:'Noms contrat bail ≠ CP – avenant en cours',action:'Coordonner Patrimoine'},
+  {id:25,prog:'RT',ag:'Deroua',                    ty:'CIH',        pct:40, liv:'Août 2026',st:'bloque', cdp:'Belbane',  bi:'BI 2025',blocage:'Avis défavorable – dossier redéposé',action:'Suivre commission'},
+  {id:26,prog:'RT',ag:'Tanger Iberia',             ty:'CIH',        pct:65, liv:'Avr 2026', st:'travaux',cdp:'Jabir',    bi:'BI 2025'},
+  {id:27,prog:'RT',ag:'Casa Maarif',               ty:'CIH',        pct:70, liv:'Avr 2026', st:'travaux',cdp:'El Morjani',bi:'BI 2025'},
+  {id:28,prog:'RT',ag:'Agadir Talborjt',           ty:'CIH',        pct:35, liv:'Juin 2026',st:'prep',   cdp:'Essamlali',bi:'BI 2026'},
+  {id:29,prog:'RT',ag:'El Jadida Plage',           ty:'CIH',        pct:20, liv:'Sept 2026',st:'etudes', cdp:'Amrani',   bi:'BI 2026'},
+  {id:40,prog:'RF',ag:'Martil',                    ty:'—',          pct:100,liv:'Jan 2026', st:'exploit',cdp:'Jabir',    bi:'BI 2025'},
+  {id:41,prog:'RF',ag:'Marrakech Regent',          ty:'—',          pct:15, liv:'Avril 2026',st:'prep',  cdp:'Belbane',  bi:'BI 2025'},
+  {id:42,prog:'RF',ag:'Casa Anoual',               ty:'—',          pct:5,  liv:'Juin 2026',st:'etudes', cdp:'Essamlali',bi:'BI 2026'},
+  {id:43,prog:'RF',ag:'Témara Plage',              ty:'—',          pct:5,  liv:'Juil 2026',st:'etudes', cdp:'Jabir',    bi:'BI 2026'},
+  {id:44,prog:'RF',ag:'Settat Centre',             ty:'—',          pct:0,  liv:'Août 2026',st:'etudes', cdp:'Belbane',  bi:'BI 2026'},
+];
+
+const BUDGETS = {NA:15, RT:10, RF:10};
+const PROG_LABEL = {NA:'Nouvelles Agences', RT:'Rénovations Totales', RF:'Rénovations Flash'};
+const PROG_COLOR = {NA:CIH.navy, RT:CIH.red, RF:CIH.amber};
+
+// ─── STATE ─────────────────────────────────────────────────────────────────
+
+let state = {
+  projects: (() => { try { const r=localStorage.getItem('cih_v3'); return r?JSON.parse(r):JSON.parse(JSON.stringify(SEED)); } catch(e){ return JSON.parse(JSON.stringify(SEED)); } })(),
+  nav: { screen:'home', tab:'home', filter:'NA', projId:null },
+  statusFilter: null,
+  editDraft: null,
+};
+
+function save() {
+  try { localStorage.setItem('cih_v3', JSON.stringify(state.projects)); } catch(e){}
+}
+
+function go(patch) {
+  Object.assign(state.nav, patch);
+  render();
+}
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = '✓ ' + msg;
+  t.style.display = 'block';
+  clearTimeout(window._toastT);
+  window._toastT = setTimeout(() => t.style.display='none', 1800);
+}
+
+// ─── HELPERS ───────────────────────────────────────────────────────────────
+
+function getTime() {
+  const d = new Date();
+  return String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+}
+
+function kpis() {
+  const byStatus = {};
+  SK.forEach(k => byStatus[k]=0);
+  const byProg = {};
+  ['NA','RT','RF'].forEach(p => { byProg[p]={ident:0,livres:0,bloq:0,byStatus:{}}; SK.forEach(k=>byProg[p].byStatus[k]=0); });
+  let livres=0, bloq=0;
+  state.projects.forEach(p => {
+    byStatus[p.st]=(byStatus[p.st]||0)+1;
+    byProg[p.prog].ident++; byProg[p.prog].byStatus[p.st]++;
+    if(p.st==='exploit'||p.st==='livree'){livres++;byProg[p.prog].livres++;}
+    if(p.st==='bloque'){bloq++;byProg[p.prog].bloq++;}
+  });
+  return { total:state.projects.length, budget:35, livres, bloq, byStatus, byProg };
+}
+
+function pbarColor(pct) {
+  return pct===100?CIH.green:pct>=50?CIH.blue:pct>0?CIH.amber:CIH.line;
+}
+
+function progBarHtml(pct, color) {
+  const c = color || pbarColor(pct);
+  return `<div class="pbar-wrap"><div class="pbar-fill" style="width:${pct}%;background:${c}"></div></div>`;
+}
+
+function badgeHtml(icon, label, color, bg) {
+  return `<span class="badge" style="color:${color};background:${bg};border:1px solid ${color}22">${icon} ${label}</span>`;
+}
+
+function statusBadge(st) {
+  const m = STATUSES[st];
+  return badgeHtml(m.icon, m.l, m.c, m.b);
+}
+
+function svgBatteryIcons(dark) {
+  const c = dark ? '#fff' : '#000';
+  return `
+    <svg width="17" height="11" viewBox="0 0 19 12"><rect x="0" y="7.5" width="3.2" height="4.5" rx=".7" fill="${c}"/><rect x="4.8" y="5" width="3.2" height="7" rx=".7" fill="${c}"/><rect x="9.6" y="2.5" width="3.2" height="9.5" rx=".7" fill="${c}"/><rect x="14.4" y="0" width="3.2" height="12" rx=".7" fill="${c}"/></svg>
+    <svg width="15" height="11" viewBox="0 0 17 12"><path d="M8.5 3.2C10.8 3.2 12.9 4.1 14.4 5.6L15.5 4.5C13.7 2.7 11.2 1.5 8.5 1.5C5.8 1.5 3.3 2.7 1.5 4.5L2.6 5.6C4.1 4.1 6.2 3.2 8.5 3.2Z" fill="${c}"/><path d="M8.5 6.8C9.9 6.8 11.1 7.3 12 8.2L13.1 7.1C11.8 5.9 10.2 5.1 8.5 5.1C6.8 5.1 5.2 5.9 3.9 7.1L5 8.2C5.9 7.3 7.1 6.8 8.5 6.8Z" fill="${c}"/><circle cx="8.5" cy="10.5" r="1.5" fill="${c}"/></svg>
+    <svg width="25" height="12" viewBox="0 0 27 13"><rect x=".5" y=".5" width="23" height="12" rx="3.5" stroke="${c}" stroke-opacity=".35" fill="none"/><rect x="2" y="2" width="20" height="9" rx="2" fill="${c}"/></svg>`;
+}
+
+function statusBarHtml(dark=false) {
+  const c = dark ? 'color:#fff' : 'color:#000';
+  return `<div class="sbar"><span class="time" style="${dark?'color:#fff':'color:#000'}">${getTime()}</span><div class="icons" style="gap:6px">${svgBatteryIcons(dark)}</div></div>`;
+}
+
+function headerHtml({title, sub, back=false, editBtn=false, rightBadge=null, resetBtn=false, alertCount=0}) {
+  let left = back
+    ? `<div class="hdr-back" onclick="goBack()"><svg width="9" height="15" viewBox="0 0 9 15"><path d="M7 1L2 7.5 7 14" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`
+    : `<div class="hdr-logo">CIH</div>`;
+  let right = '';
+  if (editBtn) right = `<div onclick="goEdit()" style="padding:6px 12px;border-radius:18px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;gap:6px;cursor:pointer;flex-shrink:0"><svg width="12" height="12" viewBox="0 0 12 12"><path d="M1 11l3-1L11 3l-2-2-7 7-1 3z" stroke="#fff" stroke-width="1.4" fill="none" stroke-linejoin="round"/></svg>Modifier</div>`;
+  if (alertCount > 0) right = `<div style="width:36px;height:36px;border-radius:18px;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;position:relative;flex-shrink:0"><svg width="16" height="18" viewBox="0 0 16 18"><path d="M8 1a5 5 0 015 5v3l2 3H1l2-3V6a5 5 0 015-5zm-2 13a2 2 0 104 0" stroke="#fff" stroke-width="1.6" stroke-linecap="round" fill="none"/></svg><div style="position:absolute;top:6px;right:6px;width:8px;height:8px;border-radius:4px;background:#C0392B;border:1.5px solid #fff"></div></div>`;
+  if (rightBadge) right = `<div style="background:#EF4444;color:#fff;padding:5px 10px;border-radius:99px;font-size:12px;font-weight:800;flex-shrink:0">${rightBadge}</div>`;
+  if (resetBtn) right = `<div onclick="doReset()" style="padding:6px 12px;border-radius:18px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);color:#fff;font-size:11px;font-weight:700;cursor:pointer;flex-shrink:0">↺ Reset</div>`;
+  return `${statusBarHtml(true)}<div class="hdr"><div class="hdr-inner" style="display:flex;align-items:center;gap:12px">${left}<div class="hdr-titles"><div class="hdr-title">${title}</div><div class="hdr-sub">${sub}</div></div>${right}</div></div>`;
+}
+
+function tabBarHtml() {
+  const tabs = [
+    ['home','Accueil','M3 10l7-7 7 7v8a2 2 0 01-2 2h-4v-6H9v6H5a2 2 0 01-2-2v-8z'],
+    ['prog','Programmes','M4 4h5v5H4V4zm7 0h5v5h-5V4zM4 11h5v5H4v-5zm7 0h5v5h-5v-5z'],
+    ['alert','Alertes','M10 2a6 6 0 00-6 6v3l-2 3h16l-2-3V8a6 6 0 00-6-6zm-2 14a2 2 0 104 0'],
+    ['team','Équipe','M10 10a3.5 3.5 0 100-7 3.5 3.5 0 000 7zm-6 7a6 6 0 0112 0'],
+  ];
+  return `<div class="tabbar">${tabs.map(([id,label,path]) => {
+    const on = id===state.nav.tab;
+    const col = on ? '#C0392B' : '#64748B';
+    return `<div class="tab ${on?'active':''}" onclick="goTab('${id}')">
+      <svg width="22" height="22" viewBox="0 0 20 20" fill="none">
+        <path d="${path}" fill="${on?'#C0392B':'none'}" stroke="${col}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="tab-label">${label}</span>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+function homeIndHtml(light=false) {
+  return `<div class="home-ind"><div class="home-ind-bar ${light?'light':''}"></div></div>`;
+}
+
+// ─── SCREENS ───────────────────────────────────────────────────────────────
+
+function renderHome() {
+  const k = kpis();
+  const alertCount = state.projects.filter(p=>p.st==='bloque').length;
+
+  const kpiCards = [
+    {label:'Réseau actuel', value:'350', sub:'9 Corporate', color:CIH.navy, icon:'🏦'},
+    {label:'Budget 2026', value:'35', sub:'15·10·10', color:CIH.indigo, icon:'📋'},
+    {label:'Identifiés', value:String(k.total), sub:Math.round(k.total/k.budget*100)+'% du budget', color:CIH.blue, icon:'🔍'},
+    {label:'Livrés', value:String(k.livres), sub:Math.round(k.livres/k.total*100)+'% achevés', color:CIH.green, icon:'✓'},
+  ];
+
+  // Donut SVG
+  const donut = SK.map(key=>({v:k.byStatus[key],c:STATUSES[key].c})).filter(d=>d.v>0);
+  const tot = donut.reduce((s,x)=>s+x.v,0)||1;
+  let acc=0; const C=2*Math.PI*42;
+  const donuts = donut.map(d=>{
+    const len=(d.v/tot)*C; const off=-acc; acc+=len;
+    return `<circle cx="55" cy="55" r="42" stroke="${d.c}" stroke-width="14" fill="none" stroke-dasharray="${len} ${C-len}" stroke-dashoffset="${off}" transform="rotate(-90 55 55)"/>`;
+  }).join('');
+
+  return `
+    ${headerHtml({title:'Programme Réseau 2026',sub:'DPAL · Dashboard temps réel',alertCount})}
+    <div class="scroll" style="padding-bottom:10px">
+      <div class="grid2" style="padding:14px 14px 0">
+        ${kpiCards.map(kpi=>`
+          <div class="card" style="padding:11px 12px;position:relative;overflow:hidden">
+            <div style="position:absolute;top:0;left:0;right:0;height:3px;background:${kpi.color}"></div>
+            <div style="position:absolute;right:8px;top:8px;font-size:20px;opacity:.1">${kpi.icon}</div>
+            <div style="font-size:9px;font-weight:700;color:${CIH.ink3};text-transform:uppercase;letter-spacing:.6px;margin-top:4px">${kpi.label}</div>
+            <div style="font-size:26px;font-weight:900;color:${kpi.color};line-height:1.05;margin-top:2px">${kpi.value}</div>
+            <div style="font-size:10px;color:${CIH.ink3};margin-top:2px">${kpi.sub}</div>
+          </div>`).join('')}
+      </div>
+
+      <div class="alert-banner" onclick="goTab('alert')">
+        <div style="width:34px;height:34px;border-radius:17px;background:#EF4444;color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:900;flex-shrink:0">!</div>
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:700;color:#991B1B">${alertCount} alerte${alertCount>1?'s':''} active${alertCount>1?'s':''}</div>
+          <div style="font-size:11px;color:#B91C1C">Projets avec avis défavorable</div>
+        </div>
+        <svg width="7" height="12" viewBox="0 0 7 12"><path d="M1 1l5 5-5 5" stroke="#991B1B" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg>
+      </div>
+
+      <div class="card" style="margin:12px 14px 0;padding:14px">
+        <div style="font-size:13px;font-weight:700;margin-bottom:10px">Répartition par statut</div>
+        <div style="display:flex;align-items:center;gap:14px">
+          <svg width="100" height="100" viewBox="0 0 110 110">
+            <circle cx="55" cy="55" r="42" stroke="#F1F5F9" stroke-width="14" fill="none"/>
+            ${donuts}
+            <text x="55" y="52" text-anchor="middle" font-size="22" font-weight="900" fill="${CIH.navy}">${k.total}</text>
+            <text x="55" y="66" text-anchor="middle" font-size="9" fill="${CIH.ink3}" font-weight="600">PROJETS</text>
+          </svg>
+          <div style="flex:1;display:grid;grid-template-columns:1fr 1fr;gap:4px 8px">
+            ${SK.map(key=>`
+              <div style="display:flex;align-items:center;gap:5px">
+                <div style="width:7px;height:7px;border-radius:2px;background:${STATUSES[key].c};flex-shrink:0"></div>
+                <div style="font-size:10px;color:${CIH.ink2};flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${STATUSES[key].l.split(' ')[0]}</div>
+                <div style="font-size:10px;font-weight:700">${k.byStatus[key]}</div>
+              </div>`).join('')}
+          </div>
+        </div>
+      </div>
+
+      <div style="padding:16px 14px 6px;font-size:11px;font-weight:700;color:${CIH.ink3};text-transform:uppercase;letter-spacing:.6px">Avancement par programme</div>
+      <div style="padding:0 14px 20px;display:flex;flex-direction:column;gap:8px">
+        ${['NA','RT','RF'].map(prog=>{
+          const p=k.byProg[prog]; const budget=BUDGETS[prog]; const pct=Math.min(100,Math.round((p.ident/budget)*100));
+          return `<div class="card" style="padding:13px 14px;position:relative;overflow:hidden;cursor:pointer;border-left:4px solid ${PROG_COLOR[prog]}" onclick="goTab('prog');state.nav.filter='${prog}';render()">
+            <div style="display:flex;align-items:center;margin-bottom:8px">
+              <div style="flex:1;font-size:14px;font-weight:700;color:${PROG_COLOR[prog]}">${PROG_LABEL[prog]}</div>
+              <div style="font-size:11px;color:${CIH.ink3}"><strong style="color:${CIH.ink}">${p.ident}</strong> / ${budget}</div>
+            </div>
+            ${progBarHtml(pct, PROG_COLOR[prog])}
+            <div style="display:flex;justify-content:space-between;margin-top:8px;font-size:10px;color:${CIH.ink3}">
+              <span>Livrés <strong style="color:${CIH.green}">${p.livres}</strong></span>
+              <span>Bloqués <strong style="color:#EF4444">${p.bloq}</strong></span>
+              <span style="color:${p.ident>=budget?CIH.green:CIH.red}">${p.ident>=budget?'✓ Couvert':'Reste '+(budget-p.ident)}</span>
+            </div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+    ${tabBarHtml()}
+    ${homeIndHtml(false)}`;
+}
+
+function renderProg() {
+  const k = kpis();
+  const p = k.byProg[state.nav.filter];
+  const sf = state.statusFilter;
+  const list = state.projects.filter(pr => pr.prog===state.nav.filter && (!sf||pr.st===sf));
+
+  const chips = `<div class="chips">
+    <div class="chip" onclick="setStatusFilter(null)" style="background:${!sf?CIH.navy:'#fff'};color:${!sf?'#fff':CIH.ink2};border:${!sf?'none':'1px solid '+CIH.line}">Tous · ${p.ident}</div>
+    ${SK.filter(s=>p.byStatus[s]>0).map(s=>{
+      const on=sf===s;
+      return `<div class="chip" onclick="setStatusFilter('${s}')" style="background:${on?STATUSES[s].c:'#fff'};color:${on?'#fff':CIH.ink2};border:${on?'none':'1px solid '+CIH.line}">
+        ${!on?`<div style="width:7px;height:7px;border-radius:4px;background:${STATUSES[s].c}"></div>`:''}
+        ${STATUSES[s].l.split(' ')[0]} · ${p.byStatus[s]}
+      </div>`;
+    }).join('')}
+  </div>`;
+
+  const cards = list.map(pr=>`
+    <div class="card-sm" style="position:relative;cursor:pointer" onclick="goDetail(${pr.id})">
+      ${pr.st==='bloque'?`<div style="position:absolute;top:10px;right:10px;width:8px;height:8px;border-radius:4px;background:#EF4444"></div>`:''}
+      <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:8px">
+        <div style="width:32px;height:32px;border-radius:8px;background:${CIH.slateBg};color:${CIH.navy};font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">${String(pr.id).slice(-2).padStart(2,'0')}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;font-weight:700;color:${CIH.ink};letter-spacing:-.2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${pr.ag}</div>
+          <div style="font-size:11px;color:${CIH.ink3};margin-top:1px">${pr.ty} · CdP ${pr.cdp}</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+        <div style="flex:1">${progBarHtml(pr.pct)}</div>
+        <div style="font-size:11px;font-weight:700;color:${CIH.ink2};min-width:32px;text-align:right">${pr.pct}%</div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        ${statusBadge(pr.st)}
+        <div style="font-size:11px;color:${CIH.ink3}">📅 ${pr.liv}</div>
+      </div>
+    </div>`).join('');
+
+  return `
+    ${headerHtml({title:PROG_LABEL[state.nav.filter], sub:`${p.ident} projets · Budget ${BUDGETS[state.nav.filter]}`})}
+    <div class="scroll" style="padding-bottom:10px">
+      <div style="padding:12px 14px 0">
+        <div class="seg">
+          ${['NA','RT','RF'].map(t=>`<div class="seg-item ${t===state.nav.filter?'active':''}" onclick="setProgFilter('${t}')">${t}</div>`).join('')}
+        </div>
+      </div>
+      ${chips}
+      <div style="padding:14px 14px 6px;font-size:11px;font-weight:700;color:${CIH.ink3};text-transform:uppercase;letter-spacing:.6px">Projets</div>
+      <div style="padding:0 14px 20px;display:flex;flex-direction:column;gap:8px">
+        ${cards || '<div style="padding:40px;text-align:center;color:'+CIH.ink3+';font-size:13px">Aucun projet</div>'}
+      </div>
+    </div>
+    ${tabBarHtml()}
+    ${homeIndHtml()}`;
+}
+
+function renderDetail() {
+  const p = state.projects.find(x=>x.id===state.nav.projId);
+  if (!p) return '<div style="padding:80px;text-align:center">Introuvable</div>';
+
+  const rows = [
+    ['Programme', [{NA:'Nouvelles Agences',RT:'Rénovations Totales',RF:'Rénovations Flash'}[p.prog]], false],
+    ['Type', p.ty, false],
+    ['Avancement', p.pct+'%', false],
+    ['Statut', STATUSES[p.st].l, p.st==='bloque'],
+    ['Livraison prévue', p.liv, false],
+    ['Chef de Projet', p.cdp, false],
+    ['Année BI', p.bi, false],
+  ];
+
+  return `
+    ${headerHtml({title:p.ag, sub:`${p.prog} · ${p.ty} · CdP ${p.cdp}`, back:true, editBtn:true})}
+    <div class="scroll" style="padding-bottom:30px">
+      <div style="padding:14px">
+        <div class="card">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:6px">
+            ${statusBadge(p.st)}
+            ${p.st==='bloque'?`<span class="badge" style="color:#EA580C;background:#FEF3E7;border:1px solid #EA580C22">⚠ Alerte haute</span>`:''}
+          </div>
+          <div style="font-size:12px;color:${CIH.ink3};margin-bottom:4px">Avancement</div>
+          <div style="display:flex;align-items:baseline;gap:6px;margin-bottom:8px">
+            <div style="font-size:30px;font-weight:900;color:${CIH.navy}">${p.pct}</div>
+            <div style="font-size:15px;color:${CIH.ink3};font-weight:700">%</div>
+            <div style="margin-left:auto;font-size:12px;color:${CIH.ink3}">Livraison <strong>${p.liv}</strong></div>
+          </div>
+          ${progBarHtml(p.pct)}
+        </div>
+      </div>
+      ${p.blocage?`
+        <div style="padding:0 14px">
+          <div style="background:${CIH.redSoft};border:1px solid #EF444433;border-radius:12px;padding:12px 14px;display:flex;gap:10px;align-items:flex-start">
+            <div style="font-size:18px;margin-top:-2px">⚠️</div>
+            <div>
+              <div style="font-size:12px;font-weight:700;color:#991B1B">Blocage actif</div>
+              <div style="font-size:12px;color:#7F1D1D;margin-top:2px;line-height:1.4">${p.blocage}</div>
+              ${p.action?`<div style="font-size:11px;color:${CIH.blue};font-weight:600;margin-top:6px">→ ${p.action}</div>`:''}
+            </div>
+          </div>
+        </div>`:''}
+      <div style="padding:16px 14px 6px;font-size:11px;font-weight:700;color:${CIH.ink3};text-transform:uppercase;letter-spacing:.6px">Dossier</div>
+      <div style="margin:0 14px;background:#fff;border-radius:14px;border:1px solid ${CIH.line};overflow:hidden">
+        ${rows.map(([k,v,alert])=>`<div class="drow"><div class="drow-k">${k}</div><div class="drow-v" style="${alert?'color:#DC2626':''}">${v}</div></div>`).join('')}
+      </div>
+      <div onclick="goEdit()" style="margin:16px 14px 0;padding:14px;border-radius:14px;background:${CIH.navy};color:#fff;display:flex;align-items:center;justify-content:center;gap:8px;font-size:14px;font-weight:700;cursor:pointer">
+        <svg width="14" height="14" viewBox="0 0 14 14"><path d="M1 13l3-1L13 3l-2-2-9 9-1 3z" stroke="#fff" stroke-width="1.5" fill="none" stroke-linejoin="round"/></svg>
+        Modifier le projet
+      </div>
+    </div>
+    ${homeIndHtml()}`;
+}
+
+function renderEdit() {
+  const d = state.editDraft;
+  if (!d) return '';
+
+  const fieldWrap = (label, content) =>
+    `<div style="margin-bottom:14px"><div style="font-size:11px;font-weight:700;color:${CIH.ink3};text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px">${label}</div>${content}</div>`;
+
+  const selGrid = (options, field, cols=2) => {
+    return `<div class="selgrid" style="grid-template-columns:repeat(${cols},1fr)">${
+      options.map(o=>`<div class="selgrid-item ${d[field]===o.v?'sel':''}" style="${d[field]===o.v?'border-color:'+( o.c||CIH.navy)+';background:'+(o.bg||CIH.navy)+';color:'+(o.bg?o.c:'#fff'):''}" onclick="setDraftField('${field}','${o.v}')">
+        ${o.icon||''} ${o.l}
+      </div>`).join('')
+    }</div>`;
+  };
+
+  const stOptions = SK.map(k=>({v:k,l:STATUSES[k].l,icon:STATUSES[k].icon,c:STATUSES[k].c,bg:STATUSES[k].b}));
+  const cdpOptions = ['Jabir','Belbane','Essamlali','El Morjani','Amrani','Nouvelle Recrue'].map(n=>({v:n,l:n}));
+  const biOptions = ['BI 2023','BI 2024','BI 2025','BI 2026'].map(n=>({v:n,l:n}));
+  const progOptions = [{v:'NA',l:'NA',c:CIH.navy},{v:'RT',l:'RT',c:CIH.red},{v:'RF',l:'RF',c:CIH.amber}];
+
+  return `
+    ${headerHtml({title:'Modifier', sub:d.ag, back:true})}
+    <div class="scroll" style="padding:14px 14px 120px">
+      ${fieldWrap("Nom de l'agence", `<input type="text" value="${d.ag.replace(/"/g,'&quot;')}" oninput="setDraftField('ag',this.value)">`)}
+      ${fieldWrap(`Avancement · ${d.pct}%`, `
+        <div class="card" style="padding:14px">
+          <input type="range" min="0" max="100" step="5" value="${d.pct}" oninput="setDraftPct(this.value)">
+          <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:10px;color:${CIH.ink3}"><span>0%</span><span>50%</span><span>100%</span></div>
+          <div style="margin-top:10px" id="edit-pbar">${progBarHtml(d.pct)}</div>
+        </div>`)}
+      ${fieldWrap('Statut', selGrid(stOptions,'st'))}
+      ${fieldWrap('Programme', selGrid(progOptions,'prog',3))}
+      ${fieldWrap('Type', `<input type="text" value="${(d.ty||'').replace(/"/g,'&quot;')}" placeholder="Acquisition / Location / CIH..." oninput="setDraftField('ty',this.value)">`)}
+      ${fieldWrap('Livraison prévue', `<input type="text" value="${(d.liv||'').replace(/"/g,'&quot;')}" placeholder="ex: Mars 2026" oninput="setDraftField('liv',this.value)">`)}
+      ${fieldWrap('Chef de Projet', selGrid(cdpOptions,'cdp'))}
+      ${fieldWrap('Année BI', selGrid(biOptions,'bi',4))}
+      ${d.st==='bloque'?
+        fieldWrap('Motif de blocage', `<textarea oninput="setDraftField('blocage',this.value)">${d.blocage||''}</textarea>`) +
+        fieldWrap('Action requise', `<input type="text" value="${(d.action||'').replace(/"/g,'&quot;')}" placeholder="ex: Relancer syndic" oninput="setDraftField('action',this.value)">`)
+        :''}
+    </div>
+    <div class="cta-bar">
+      <div onclick="go({screen:'detail'})" style="width:90px;height:48px;border-radius:12px;background:#fff;border:1px solid ${CIH.line};display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;color:${CIH.ink2};cursor:pointer">Annuler</div>
+      <div onclick="saveEdit()" style="flex:1;height:48px;border-radius:12px;background:${CIH.navy};color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;gap:8px;cursor:pointer">
+        <svg width="14" height="14" viewBox="0 0 14 14"><path d="M1 7l4 4 8-8" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Enregistrer
+      </div>
+    </div>
+    ${homeIndHtml()}`;
+}
+
+function renderAlerts() {
+  const list = state.projects.filter(p=>p.st==='bloque');
+  const critLevels = [
+    {l:'Critique', n:list.filter(p=>p.pct<20).length, c:'#DC2626'},
+    {l:'Haute',    n:list.filter(p=>p.pct>=20&&p.pct<50).length, c:'#EA580C'},
+    {l:'Moyenne',  n:list.filter(p=>p.pct>=50).length, c:'#D97706'},
+  ];
+
+  return `
+    ${headerHtml({title:'Alertes & Blocages', sub:`${list.length} alerte${list.length>1?'s':''} active${list.length>1?'s':''}`, rightBadge:list.length})}
+    <div class="scroll" style="padding-bottom:10px">
+      <div class="grid3" style="padding:12px 14px 0">
+        ${critLevels.map(s=>`
+          <div class="card-sm">
+            <div style="display:flex;align-items:center;gap:5px;margin-bottom:4px">
+              <div style="width:6px;height:6px;border-radius:3px;background:${s.c}"></div>
+              <div style="font-size:9px;font-weight:700;color:${CIH.ink3};text-transform:uppercase;letter-spacing:.5px">${s.l}</div>
+            </div>
+            <div style="font-size:22px;font-weight:900;color:${s.c}">${s.n}</div>
+          </div>`).join('')}
+      </div>
+      <div style="padding:12px 14px 20px;display:flex;flex-direction:column;gap:10px">
+        ${list.length===0?`<div style="padding:40px;text-align:center;color:${CIH.ink3};font-size:13px">🎉 Aucun projet bloqué</div>`:
+          list.map(p=>{
+            const crit = p.pct<20?{l:'CRITIQUE',c:'#DC2626'}:p.pct<50?{l:'HAUTE',c:'#EA580C'}:{l:'MOYENNE',c:'#D97706'};
+            return `<div class="card-sm" style="border-left:4px solid ${crit.c};cursor:pointer" onclick="goDetail(${p.id})">
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;flex-wrap:wrap">
+                <span style="font-size:9px;font-weight:800;color:#fff;background:${crit.c};padding:2px 7px;border-radius:4px;letter-spacing:.3px">${crit.l}</span>
+                <span style="font-size:9px;font-weight:700;color:${CIH.ink3};background:#F1F5F9;padding:2px 7px;border-radius:4px">${p.prog}</span>
+                <div style="font-size:13px;font-weight:700;color:${CIH.ink}">${p.ag}</div>
+              </div>
+              <div style="font-size:12px;color:${CIH.ink2};line-height:1.4">${p.blocage||'Blocage actif'}</div>
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-top:6px">
+                <div style="font-size:11px;color:${CIH.blue};font-weight:600">${p.action?'→ '+p.action:'Aucune action définie'}</div>
+                <div style="font-size:10px;color:${CIH.ink3}">👤 ${p.cdp}</div>
+              </div>
+            </div>`;
+          }).join('')}
+      </div>
+    </div>
+    ${tabBarHtml()}
+    ${homeIndHtml()}`;
+}
+
+function renderTeam() {
+  const names = ['Jabir','Belbane','Essamlali','El Morjani','Amrani','Nouvelle Recrue'];
+  const colors = [CIH.navy,CIH.red,CIH.blue,CIH.violet,CIH.green,CIH.slate];
+  const team = names.map((n,i)=>{
+    const mine = state.projects.filter(p=>p.cdp===n);
+    return {n, color:colors[i], load:mine.length, open:mine.filter(p=>p.st!=='exploit'&&p.st!=='livree').length, done:mine.filter(p=>p.st==='exploit'||p.st==='livree').length};
+  });
+  const maxLoad = Math.max(1,...team.map(t=>t.load));
+  const tot = state.projects.length;
+  const ouverts = state.projects.filter(p=>p.st!=='exploit'&&p.st!=='livree').length;
+  const livres = state.projects.filter(p=>p.st==='exploit'||p.st==='livree').length;
+
+  return `
+    ${headerHtml({title:'Équipe DPAL', sub:`${team.length} chefs de projet`, resetBtn:true})}
+    <div class="scroll" style="padding-bottom:10px">
+      <div class="grid3" style="padding:14px 14px 0">
+        ${[['Total',tot,CIH.navy],['Ouverts',ouverts,CIH.amber],['Livrés',livres,CIH.green]].map(([l,v,c])=>`
+          <div class="card-sm" style="padding:10px 12px">
+            <div style="font-size:9px;font-weight:700;color:${CIH.ink3};text-transform:uppercase;letter-spacing:.5px">${l}</div>
+            <div style="font-size:22px;font-weight:900;color:${c};margin-top:2px">${v}</div>
+          </div>`).join('')}
+      </div>
+      <div style="padding:16px 14px 6px;font-size:11px;font-weight:700;color:${CIH.ink3};text-transform:uppercase;letter-spacing:.6px">Charge par chef de projet</div>
+      <div style="padding:0 14px 20px;display:flex;flex-direction:column;gap:8px">
+        ${team.map(p=>`
+          <div class="card-sm">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+              <div style="width:38px;height:38px;border-radius:19px;background:${p.color};color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0">${p.n.split(' ').map(w=>w[0]).slice(0,2).join('')}</div>
+              <div style="flex:1"><div style="font-size:14px;font-weight:700">${p.n}</div><div style="font-size:11px;color:${CIH.ink3}">Chef de Projet</div></div>
+              <div style="text-align:right"><div style="font-size:18px;font-weight:900;color:${p.color}">${p.load}</div><div style="font-size:9px;color:${CIH.ink3};font-weight:600">projets</div></div>
+            </div>
+            ${progBarHtml(Math.round((p.load/maxLoad)*100), p.color)}
+            <div style="display:flex;gap:14px;margin-top:8px;font-size:11px;color:${CIH.ink3}">
+              <span><strong style="color:${CIH.amber}">${p.open}</strong> en cours</span>
+              <span><strong style="color:${CIH.green}">${p.done}</strong> livrés</span>
+            </div>
+          </div>`).join('')}
+      </div>
+    </div>
+    ${tabBarHtml()}
+    ${homeIndHtml()}`;
+}
+
+// ─── MAIN RENDER ───────────────────────────────────────────────────────────
+
+function render() {
+  let html = '';
+  const s = state.nav.screen;
+  if (s==='home')   html = renderHome();
+  else if (s==='prog')   html = renderProg();
+  else if (s==='detail') html = renderDetail();
+  else if (s==='edit')   html = renderEdit();
+  else if (s==='alert')  html = renderAlerts();
+  else if (s==='team')   html = renderTeam();
+  else html = renderHome();
+
+  const app = document.getElementById('app');
+  // keep toast
+  const toast = app.querySelector('#toast');
+  app.innerHTML = `<div id="toast">${toast?toast.innerHTML:''}</div>` + html;
+  // restore toast visibility
+  if (window._toastVisible) document.getElementById('toast').style.display='block';
+}
+
+// ─── ACTIONS ───────────────────────────────────────────────────────────────
+
+function goTab(id) {
+  state.nav.tab = id;
+  state.nav.screen = id;
+  state.nav.projId = null;
+  state.statusFilter = null;
+  render();
+}
+
+function goBack() {
+  const s = state.nav.screen;
+  if (s==='detail') { go({screen: state.nav.tab, projId:null}); }
+  else if (s==='edit') { go({screen:'detail'}); }
+  else { go({screen:'home', tab:'home'}); }
+}
+
+function goDetail(id) {
+  state.nav.projId = id;
+  go({screen:'detail'});
+}
+
+function goEdit() {
+  const p = state.projects.find(x=>x.id===state.nav.projId);
+  if (p) { state.editDraft = Object.assign({},p); go({screen:'edit'}); }
+}
+
+function setProgFilter(prog) {
+  state.nav.filter = prog;
+  state.statusFilter = null;
+  render();
+}
+
+function setStatusFilter(val) {
+  state.statusFilter = val;
+  render();
+}
+
+function setDraftField(field, value) {
+  if (!state.editDraft) return;
+  state.editDraft[field] = value;
+  // For statut change, just re-render to show/hide blocage fields
+  if (field === 'st') render();
+}
+
+function setDraftPct(value) {
+  if (!state.editDraft) return;
+  state.editDraft.pct = parseInt(value);
+  // Update pbar live without full re-render
+  const el = document.getElementById('edit-pbar');
+  if (el) el.innerHTML = progBarHtml(state.editDraft.pct);
+  // Update label in field title
+  const labels = document.querySelectorAll('[data-pct-label]');
+  labels.forEach(l => l.textContent = state.editDraft.pct + '%');
+}
+
+function saveEdit() {
+  if (!state.editDraft) return;
+  const idx = state.projects.findIndex(p=>p.id===state.editDraft.id);
+  if (idx>=0) state.projects[idx] = Object.assign({}, state.editDraft);
+  save();
+  toast('Projet mis à jour');
+  go({screen:'detail'});
+}
+
+function doReset() {
+  state.projects = JSON.parse(JSON.stringify(SEED));
+  save();
+  toast('Données réinitialisées');
+  render();
+}
+
+// ─── INIT ──────────────────────────────────────────────────────────────────
+
+render();
+
+// Update clock every 30s
+setInterval(() => {
+  const el = document.querySelector('.sbar .time');
+  if (el) el.textContent = getTime();
+}, 30000);
+</script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  });
+}
+</script>
+</body>
+</html>
