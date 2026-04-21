@@ -7,13 +7,6 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="CIH 2026">
 <title>CIH — Programme Réseau 2026</title>
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icons/icon-180.png">
-<link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152.png">
-<link rel="apple-touch-icon" sizes="180x180" href="icons/icon-180.png">
-<meta name="apple-touch-fullscreen" content="yes">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#0C1F3F">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{width:100%;height:100%;overflow:hidden;background:#0C1F3F;font-family:"Helvetica Neue",-apple-system,system-ui,sans-serif}
@@ -115,33 +108,664 @@ const STATUSES = {
 const SK = ['exploit','livree','travaux','admin','prep','bloque','etudes'];
 
 const SEED = [
-  {id:1, prog:'NA',ag:'Sidi Maârouf Al Moustakbal',ty:'Acquisition',pct:100,liv:'Jan 2026', st:'exploit',cdp:'Jabir',    bi:'BI 2024'},
-  {id:2, prog:'NA',ag:'Centre BP Casa Centre',     ty:'Location',   pct:100,liv:'Jan 2026', st:'exploit',cdp:'Jabir',    bi:'BI 2024'},
-  {id:3, prog:'NA',ag:'Bouskoura II',              ty:'Acquisition',pct:35, liv:'Juin 2026',st:'bloque', cdp:'Jabir',    bi:'BI 2025',blocage:'Avis défavorable – syndic requis pour démolition mur',action:'Commission 31/03/2026'},
-  {id:4, prog:'NA',ag:'Tanger Casabarata',         ty:'Location',   pct:78, liv:'Mars 2026',st:'livree', cdp:'Jabir',    bi:'BI 2025'},
-  {id:5, prog:'NA',ag:'Villa Dakhla',              ty:'Acquisition',pct:20, liv:'Sept 2026',st:'bloque', cdp:'Belbane',  bi:'BI 2025',blocage:'Avis défavorable – intervention vendeur agence urbaine',action:'Relancer propriétaire'},
-  {id:6, prog:'NA',ag:'Ahfir',                     ty:'Location',   pct:55, liv:'Mai 2026', st:'admin',  cdp:'Essamlali',bi:'BI 2025'},
-  {id:7, prog:'NA',ag:'Casa Hadj Fateh 2',         ty:'Acquisition',pct:42, liv:'Juil 2026',st:'prep',   cdp:'Essamlali',bi:'BI 2025'},
-  {id:8, prog:'NA',ag:'Marrakech Guéliz Nord',     ty:'Location',   pct:68, liv:'Avril 2026',st:'livree',cdp:'El Morjani',bi:'BI 2026'},
-  {id:9, prog:'NA',ag:'Rabat Agdal',               ty:'Acquisition',pct:50, liv:'Mai 2026', st:'admin',  cdp:'Amrani',   bi:'BI 2026'},
-  {id:10,prog:'NA',ag:'Oujda Centre',              ty:'Location',   pct:15, liv:'Oct 2026', st:'etudes', cdp:'El Morjani',bi:'BI 2026'},
-  {id:11,prog:'NA',ag:'Fès Atlas',                 ty:'Acquisition',pct:10, liv:'Nov 2026', st:'etudes', cdp:'Amrani',   bi:'BI 2026'},
-  {id:12,prog:'NA',ag:'Kénitra Mimosa',            ty:'Location',   pct:25, liv:'Sept 2026',st:'prep',   cdp:'Jabir',    bi:'BI 2026'},
-  {id:20,prog:'RT',ag:'Casa Sidi Maârouf',         ty:'CIH',        pct:100,liv:'24 Jan 2026',st:'exploit',cdp:'Jabir',  bi:'BI 2023'},
-  {id:21,prog:'RT',ag:'Rabat Bab El Had',          ty:'CIH',        pct:100,liv:'Fév 2026', st:'exploit',cdp:'Jabir',    bi:'BI 2024'},
-  {id:22,prog:'RT',ag:'Rabat Akkari',              ty:'CIH',        pct:45, liv:'Mai 2026', st:'bloque', cdp:'Jabir',    bi:'BI 2025',blocage:'Avis défavorable – dossier redéposé',action:'Suivre commission'},
-  {id:23,prog:'RT',ag:'Casa Palmier',              ty:'Partage',    pct:30, liv:'Juin 2026',st:'bloque', cdp:'Belbane',  bi:'BI 2025',blocage:'Manque Accord Syndic + AJARINVEST',action:'Obtenir accords'},
-  {id:24,prog:'RT',ag:'Marrakech Daoudiate I',     ty:'CIH',        pct:25, liv:'Juil 2026',st:'bloque', cdp:'Belbane',  bi:'BI 2025',blocage:'Noms contrat bail ≠ CP – avenant en cours',action:'Coordonner Patrimoine'},
-  {id:25,prog:'RT',ag:'Deroua',                    ty:'CIH',        pct:40, liv:'Août 2026',st:'bloque', cdp:'Belbane',  bi:'BI 2025',blocage:'Avis défavorable – dossier redéposé',action:'Suivre commission'},
-  {id:26,prog:'RT',ag:'Tanger Iberia',             ty:'CIH',        pct:65, liv:'Avr 2026', st:'travaux',cdp:'Jabir',    bi:'BI 2025'},
-  {id:27,prog:'RT',ag:'Casa Maarif',               ty:'CIH',        pct:70, liv:'Avr 2026', st:'travaux',cdp:'El Morjani',bi:'BI 2025'},
-  {id:28,prog:'RT',ag:'Agadir Talborjt',           ty:'CIH',        pct:35, liv:'Juin 2026',st:'prep',   cdp:'Essamlali',bi:'BI 2026'},
-  {id:29,prog:'RT',ag:'El Jadida Plage',           ty:'CIH',        pct:20, liv:'Sept 2026',st:'etudes', cdp:'Amrani',   bi:'BI 2026'},
-  {id:40,prog:'RF',ag:'Martil',                    ty:'—',          pct:100,liv:'Jan 2026', st:'exploit',cdp:'Jabir',    bi:'BI 2025'},
-  {id:41,prog:'RF',ag:'Marrakech Regent',          ty:'—',          pct:15, liv:'Avril 2026',st:'prep',  cdp:'Belbane',  bi:'BI 2025'},
-  {id:42,prog:'RF',ag:'Casa Anoual',               ty:'—',          pct:5,  liv:'Juin 2026',st:'etudes', cdp:'Essamlali',bi:'BI 2026'},
-  {id:43,prog:'RF',ag:'Témara Plage',              ty:'—',          pct:5,  liv:'Juil 2026',st:'etudes', cdp:'Jabir',    bi:'BI 2026'},
-  {id:44,prog:'RF',ag:'Settat Centre',             ty:'—',          pct:0,  liv:'Août 2026',st:'etudes', cdp:'Belbane',  bi:'BI 2026'},
+  {
+    "id": 1,
+    "prog": "NA",
+    "ag": "Sidi Maârouf Al Moustakbal",
+    "ty": "Acquisition",
+    "pct": 100,
+    "liv": "Janvier 2026",
+    "st": "exploit",
+    "cdp": "Jabir",
+    "bi": "BI 2024",
+    "rg": "Casa"
+  },
+  {
+    "id": 2,
+    "prog": "NA",
+    "ag": "Centre BP Casa Centre",
+    "ty": "Location",
+    "pct": 100,
+    "liv": "Février 2026",
+    "st": "exploit",
+    "cdp": "Jabir",
+    "bi": "BI 2025",
+    "rg": "Casa"
+  },
+  {
+    "id": 3,
+    "prog": "NA",
+    "ag": "Marrakech Daoudiate II",
+    "ty": "Acquisition",
+    "pct": 100,
+    "liv": "Février 2026",
+    "st": "exploit",
+    "cdp": "El Morjani",
+    "bi": "BI 2024",
+    "rg": "Centre Sud"
+  },
+  {
+    "id": 4,
+    "prog": "NA",
+    "ag": "Casa Oasis",
+    "ty": "Acquisition",
+    "pct": 100,
+    "liv": "Mars 2026",
+    "st": "exploit",
+    "cdp": "Amrani",
+    "bi": "BI 2024",
+    "rg": "Casa"
+  },
+  {
+    "id": 5,
+    "prog": "NA",
+    "ag": "Zaio",
+    "ty": "Location",
+    "pct": 100,
+    "liv": "T1 2026",
+    "st": "exploit",
+    "cdp": "Belbane",
+    "bi": "BI 2025",
+    "rg": "Oriental"
+  },
+  {
+    "id": 6,
+    "prog": "NA",
+    "ag": "Tinghir",
+    "ty": "Location",
+    "pct": 100,
+    "liv": "T1 2026",
+    "st": "livree",
+    "cdp": "Belbane",
+    "bi": "BI 2023",
+    "rg": "Sud"
+  },
+  {
+    "id": 7,
+    "prog": "NA",
+    "ag": "Midelt",
+    "ty": "Location",
+    "pct": 100,
+    "liv": "T1 2026",
+    "st": "livree",
+    "cdp": "Jabir",
+    "bi": "BI 2025",
+    "rg": "Saiss"
+  },
+  {
+    "id": 8,
+    "prog": "NA",
+    "ag": "Casa Bd El Quods II",
+    "ty": "Acquisition",
+    "pct": 100,
+    "liv": "T1 2026",
+    "st": "livree",
+    "cdp": "El Morjani",
+    "bi": "BI 2025",
+    "rg": "Casa"
+  },
+  {
+    "id": 9,
+    "prog": "NA",
+    "ag": "Bouskoura II",
+    "ty": "Acquisition",
+    "pct": 0,
+    "liv": "T2 2026",
+    "st": "bloque",
+    "cdp": "Jabir",
+    "bi": "BI 2025",
+    "rg": "Casa",
+    "blocage": "Avis défavorable – syndic requis pour démolition mur",
+    "action": "Commission 31/03/2026"
+  },
+  {
+    "id": 10,
+    "prog": "NA",
+    "ag": "Tanger Casabarata",
+    "ty": "Acquisition",
+    "pct": 0,
+    "liv": "T2 2026",
+    "st": "admin",
+    "cdp": "Jabir",
+    "bi": "BI 2025",
+    "rg": "Nord",
+    "blocage": "Taxe signalétique – chèque en cours",
+    "action": "Accélérer paiement"
+  },
+  {
+    "id": 11,
+    "prog": "NA",
+    "ag": "Ahfir",
+    "ty": "Acquisition",
+    "pct": 0,
+    "liv": "T2 2026",
+    "st": "prep",
+    "cdp": "Essamlali",
+    "bi": "BI 2025",
+    "rg": "Oriental",
+    "blocage": "Attente quitus fiscale",
+    "action": "Relancer Patrimoine"
+  },
+  {
+    "id": 12,
+    "prog": "NA",
+    "ag": "Casa Hadj Fateh 2",
+    "ty": "Acquisition",
+    "pct": 0,
+    "liv": "T2 2026",
+    "st": "prep",
+    "cdp": "Essamlali",
+    "bi": "BI 2025",
+    "rg": "Casa",
+    "blocage": "Documents OPCI BMCI en attente",
+    "action": "Relancer OPCI"
+  },
+  {
+    "id": 13,
+    "prog": "NA",
+    "ag": "Villa Dakhla",
+    "ty": "Acquisition",
+    "pct": 0,
+    "liv": "T2 2026",
+    "st": "bloque",
+    "cdp": "Belbane",
+    "bi": "BI 2025",
+    "rg": "Sud",
+    "blocage": "Avis défavorable – intervention vendeur agence urbaine",
+    "action": "Relancer propriétaire + architecte"
+  },
+  {
+    "id": 14,
+    "prog": "NA",
+    "ag": "Casa Anassi II",
+    "ty": "Acquisition",
+    "pct": 0,
+    "liv": "T2 2026",
+    "st": "prep",
+    "cdp": "Essamlali",
+    "bi": "BI 2025",
+    "rg": "Casa"
+  },
+  {
+    "id": 15,
+    "prog": "NA",
+    "ag": "Mediouna",
+    "ty": "Acquisition",
+    "pct": 0,
+    "liv": "T2 2026",
+    "st": "admin",
+    "cdp": "Essamlali",
+    "bi": "BI 2025",
+    "rg": "Casa"
+  },
+  {
+    "id": 16,
+    "prog": "NA",
+    "ag": "Retail – Annexe Nador",
+    "ty": "Annexe DR",
+    "pct": 0,
+    "liv": "T3 2026",
+    "st": "etudes",
+    "cdp": "-",
+    "bi": "BI 2025",
+    "rg": "Oriental"
+  },
+  {
+    "id": 17,
+    "prog": "NA",
+    "ag": "Corporate – Annexe Nador",
+    "ty": "Annexe DR",
+    "pct": 0,
+    "liv": "T3 2026",
+    "st": "etudes",
+    "cdp": "-",
+    "bi": "BI 2025",
+    "rg": "Oriental"
+  },
+  {
+    "id": 18,
+    "prog": "NA",
+    "ag": "Mohammedia Hassan II",
+    "ty": "Acquisition",
+    "pct": 0,
+    "liv": "T3 2026",
+    "st": "etudes",
+    "cdp": "Essamlali",
+    "bi": "BI 2026",
+    "rg": "Casa"
+  },
+  {
+    "id": 19,
+    "prog": "NA",
+    "ag": "Laâyoune Marsa",
+    "ty": "Location",
+    "pct": 0,
+    "liv": "2026",
+    "st": "etudes",
+    "cdp": "Belbane",
+    "bi": "BI 2026",
+    "rg": "Sud"
+  },
+  {
+    "id": 20,
+    "prog": "NA",
+    "ag": "Rabat Hay Riad",
+    "ty": "Acquisition",
+    "pct": 0,
+    "liv": "2026",
+    "st": "etudes",
+    "cdp": "Jabir",
+    "bi": "BI 2026",
+    "rg": "Rabat Kenitra"
+  },
+  {
+    "id": 21,
+    "prog": "NA",
+    "ag": "Kenitra Bir Rami",
+    "ty": "Acquisition",
+    "pct": 0,
+    "liv": "2026",
+    "st": "etudes",
+    "cdp": "Belbane",
+    "bi": "BI 2026",
+    "rg": "Rabat Kenitra"
+  },
+  {
+    "id": 22,
+    "prog": "NA",
+    "ag": "Kenitra Ville Haute",
+    "ty": "Acquisition",
+    "pct": 0,
+    "liv": "2026",
+    "st": "etudes",
+    "cdp": "Belbane",
+    "bi": "BI 2026",
+    "rg": "Rabat Kenitra"
+  },
+  {
+    "id": 23,
+    "prog": "NA",
+    "ag": "Tanger Mesnana",
+    "ty": "Acquisition",
+    "pct": 0,
+    "liv": "T3 2026",
+    "st": "etudes",
+    "cdp": "-",
+    "bi": "BI 2026",
+    "rg": "Nord"
+  },
+  {
+    "id": 24,
+    "prog": "NA",
+    "ag": "Berrechid Quartier Layali",
+    "ty": "Acquisition",
+    "pct": 0,
+    "liv": "T3 2026",
+    "st": "etudes",
+    "cdp": "-",
+    "bi": "BI 2026",
+    "rg": "Casa"
+  },
+  {
+    "id": 25,
+    "prog": "RT",
+    "ag": "Casa Sidi Maârouf",
+    "ty": "CIH",
+    "pct": 100,
+    "liv": "24 Jan 2026",
+    "st": "exploit",
+    "cdp": "Jabir",
+    "bi": "BI 2023",
+    "rg": "Casa",
+    "ar": "Azzam"
+  },
+  {
+    "id": 26,
+    "prog": "RT",
+    "ag": "Rabat Bab El Had",
+    "ty": "CIH",
+    "pct": 100,
+    "liv": "04 Avr 2026",
+    "st": "exploit",
+    "cdp": "Jabir",
+    "bi": "BI 2025",
+    "rg": "Rabat Kenitra",
+    "ar": "Khyari"
+  },
+  {
+    "id": 27,
+    "prog": "RT",
+    "ag": "Casa Salmia",
+    "ty": "CIH",
+    "pct": 90,
+    "liv": "Avril 2026",
+    "st": "travaux",
+    "cdp": "Essamlali",
+    "bi": "BI 2024",
+    "rg": "Casa",
+    "ar": "Azzam"
+  },
+  {
+    "id": 28,
+    "prog": "RT",
+    "ag": "Guercif",
+    "ty": "CIH",
+    "pct": 65,
+    "liv": "Avril 2026",
+    "st": "travaux",
+    "cdp": "Jabir",
+    "bi": "BI 2025",
+    "rg": "Oriental",
+    "ar": "Moumni"
+  },
+  {
+    "id": 29,
+    "prog": "RT",
+    "ag": "Rabat Akkari",
+    "ty": "CIH",
+    "pct": 0,
+    "liv": "2026",
+    "st": "bloque",
+    "cdp": "Jabir",
+    "bi": "BI 2025",
+    "rg": "Rabat Kenitra",
+    "ar": "Khyari",
+    "blocage": "Avis défavorable – dossier redéposé",
+    "action": "Suivre commission"
+  },
+  {
+    "id": 30,
+    "prog": "RT",
+    "ag": "Casa Palmier",
+    "ty": "CIH",
+    "pct": 0,
+    "liv": "2026",
+    "st": "bloque",
+    "cdp": "Belbane",
+    "bi": "BI 2025",
+    "rg": "Casa",
+    "ar": "Kabbaj",
+    "blocage": "Manque Accord Syndic + AJARINVEST",
+    "action": "Obtenir accords"
+  },
+  {
+    "id": 31,
+    "prog": "RT",
+    "ag": "Marrakech Daoudiate I",
+    "ty": "CIH",
+    "pct": 0,
+    "liv": "2026",
+    "st": "bloque",
+    "cdp": "Belbane",
+    "bi": "BI 2023",
+    "rg": "Centre Sud",
+    "ar": "Bennana",
+    "blocage": "Noms contrat bail ≠ CP – avenant en cours",
+    "action": "Coordonner Patrimoine"
+  },
+  {
+    "id": 32,
+    "prog": "RT",
+    "ag": "Casa El Fida",
+    "ty": "CIH",
+    "pct": 0,
+    "liv": "2026",
+    "st": "prep",
+    "cdp": "Essamlali",
+    "bi": "BI 2025",
+    "rg": "Casa",
+    "ar": "Kabbaj"
+  },
+  {
+    "id": 33,
+    "prog": "RT",
+    "ag": "Casa Anassi",
+    "ty": "CIH",
+    "pct": 0,
+    "liv": "2026",
+    "st": "prep",
+    "cdp": "Essamlali",
+    "bi": "BI 2025",
+    "rg": "Casa",
+    "ar": "Moussaoui"
+  },
+  {
+    "id": 34,
+    "prog": "RT",
+    "ag": "Deroua",
+    "ty": "CIH",
+    "pct": 0,
+    "liv": "2026",
+    "st": "bloque",
+    "cdp": "Belbane",
+    "bi": "BI 2025",
+    "rg": "Casa",
+    "ar": "Bassit",
+    "blocage": "Avis défavorable – dossier redéposé",
+    "action": "Suivre commission"
+  },
+  {
+    "id": 35,
+    "prog": "RT",
+    "ag": "Sefrou",
+    "ty": "CIH",
+    "pct": 0,
+    "liv": "2026",
+    "st": "prep",
+    "cdp": "-",
+    "bi": "BI 2026",
+    "rg": "Saiss",
+    "ar": "Mikou"
+  },
+  {
+    "id": 36,
+    "prog": "RT",
+    "ag": "Nador Avenue des FAR",
+    "ty": "CIH",
+    "pct": 0,
+    "liv": "2026",
+    "st": "etudes",
+    "cdp": "-",
+    "bi": "BI 2025",
+    "rg": "Oriental",
+    "ar": "Moumni"
+  },
+  {
+    "id": 37,
+    "prog": "RT",
+    "ag": "Tetouan Ple",
+    "ty": "CIH",
+    "pct": 0,
+    "liv": "2026",
+    "st": "etudes",
+    "cdp": "-",
+    "bi": "BI 2026",
+    "rg": "Nord",
+    "ar": "Lebbar"
+  },
+  {
+    "id": 38,
+    "prog": "RT",
+    "ag": "Agadir Dakhla",
+    "ty": "CIH",
+    "pct": 0,
+    "liv": "2026",
+    "st": "etudes",
+    "cdp": "Belbane",
+    "bi": "BI 2026",
+    "rg": "Sud",
+    "ar": "Bennana"
+  },
+  {
+    "id": 39,
+    "prog": "RT",
+    "ag": "Marrakech Hassan II",
+    "ty": "Partage Umnia",
+    "pct": 0,
+    "liv": "2026",
+    "st": "etudes",
+    "cdp": "Belbane",
+    "bi": "BI 2026",
+    "rg": "Centre Sud",
+    "ar": "Bennana"
+  },
+  {
+    "id": 40,
+    "prog": "RT",
+    "ag": "Agadir Kettani",
+    "ty": "Partage Umnia",
+    "pct": 0,
+    "liv": "2026",
+    "st": "prep",
+    "cdp": "Belbane",
+    "bi": "BI 2026",
+    "rg": "Sud",
+    "ar": "Bennana"
+  },
+  {
+    "id": 41,
+    "prog": "RT",
+    "ag": "Tetouan Avenue des FAR",
+    "ty": "Partage Umnia",
+    "pct": 0,
+    "liv": "2026",
+    "st": "etudes",
+    "cdp": "-",
+    "bi": "BI 2026",
+    "rg": "Nord",
+    "ar": "Lebbar"
+  },
+  {
+    "id": 42,
+    "prog": "RT",
+    "ag": "Casa Ain Sebaa",
+    "ty": "Partage Umnia",
+    "pct": 0,
+    "liv": "2026",
+    "st": "prep",
+    "cdp": "Essamlali",
+    "bi": "BI 2026",
+    "rg": "Casa",
+    "ar": "Belamine"
+  },
+  {
+    "id": 43,
+    "prog": "RT",
+    "ag": "Marrakech Mhamid",
+    "ty": "CIH",
+    "pct": 0,
+    "liv": "2026",
+    "st": "etudes",
+    "cdp": "Belbane",
+    "bi": "BI 2026",
+    "rg": "Centre Sud",
+    "ar": "Bennana"
+  },
+  {
+    "id": 44,
+    "prog": "RF",
+    "ag": "Martil",
+    "ty": "-",
+    "pct": 100,
+    "liv": "Janvier 2026",
+    "st": "exploit",
+    "cdp": "Jabir",
+    "bi": "BI 2025",
+    "rg": "Nord",
+    "vis": "Oui",
+    "et": "Terminées",
+    "lsb": "-"
+  },
+  {
+    "id": 45,
+    "prog": "RF",
+    "ag": "Marrakech Regent",
+    "ty": "-",
+    "pct": 0,
+    "liv": "Avril 2026",
+    "st": "prep",
+    "cdp": "Belbane",
+    "bi": "BI 2025",
+    "rg": "Centre Sud",
+    "vis": "Oui",
+    "et": "En cours",
+    "lsb": "-"
+  },
+  {
+    "id": 46,
+    "prog": "RF",
+    "ag": "Casa Anoual",
+    "ty": "-",
+    "pct": 0,
+    "liv": "2026",
+    "st": "etudes",
+    "cdp": "Essamlali",
+    "bi": "BI 2026",
+    "rg": "Casa",
+    "vis": "À programmer",
+    "et": "Non",
+    "lsb": "-"
+  },
+  {
+    "id": 47,
+    "prog": "RF",
+    "ag": "Beni Mellal Av. FAR",
+    "ty": "-",
+    "pct": 0,
+    "liv": "2026",
+    "st": "etudes",
+    "cdp": "Belbane",
+    "bi": "BI 2026",
+    "rg": "Centre Sud",
+    "vis": "À programmer",
+    "et": "Non",
+    "lsb": "-"
+  },
+  {
+    "id": 48,
+    "prog": "RF",
+    "ag": "Casa Bourgogne",
+    "ty": "-",
+    "pct": 0,
+    "liv": "2026",
+    "st": "etudes",
+    "cdp": "Essamlali",
+    "bi": "BI 2026",
+    "rg": "Casa",
+    "vis": "À programmer",
+    "et": "Non",
+    "lsb": "À étudier"
+  },
+  {
+    "id": 49,
+    "prog": "RF",
+    "ag": "VIP Oujda",
+    "ty": "-",
+    "pct": 0,
+    "liv": "2026",
+    "st": "etudes",
+    "cdp": "-",
+    "bi": "BI 2026",
+    "rg": "Oriental",
+    "vis": "À programmer",
+    "et": "Non",
+    "lsb": "-"
+  },
+  {
+    "id": 50,
+    "prog": "RF",
+    "ag": "Mohammedia Parc",
+    "ty": "-",
+    "pct": 0,
+    "liv": "2026",
+    "st": "etudes",
+    "cdp": "Essamlali",
+    "bi": "BI 2026",
+    "rg": "Casa",
+    "vis": "À programmer",
+    "et": "Non",
+    "lsb": "-"
+  }
 ];
 
 const BUDGETS = {NA:15, RT:10, RF:10};
@@ -151,14 +775,14 @@ const PROG_COLOR = {NA:CIH.navy, RT:CIH.red, RF:CIH.amber};
 // ─── STATE ─────────────────────────────────────────────────────────────────
 
 let state = {
-  projects: (() => { try { const r=localStorage.getItem('cih_v3'); return r?JSON.parse(r):JSON.parse(JSON.stringify(SEED)); } catch(e){ return JSON.parse(JSON.stringify(SEED)); } })(),
+  projects: (() => { try { const r=localStorage.getItem('cih_v4_reel'); return r?JSON.parse(r):JSON.parse(JSON.stringify(SEED)); } catch(e){ return JSON.parse(JSON.stringify(SEED)); } })(),
   nav: { screen:'home', tab:'home', filter:'NA', projId:null },
   statusFilter: null,
   editDraft: null,
 };
 
 function save() {
-  try { localStorage.setItem('cih_v3', JSON.stringify(state.projects)); } catch(e){}
+  try { localStorage.setItem('cih_v4_reel', JSON.stringify(state.projects)); } catch(e){}
 }
 
 function go(patch) {
@@ -270,7 +894,7 @@ function renderHome() {
 
   const kpiCards = [
     {label:'Réseau actuel', value:'350', sub:'9 Corporate', color:CIH.navy, icon:'🏦'},
-    {label:'Budget 2026', value:'35', sub:'15·10·10', color:CIH.indigo, icon:'📋'},
+    {label:'Budget 2026', value:'35', sub:'15 NA · 10 RT · 10 RF', color:CIH.indigo, icon:'📋'},
     {label:'Identifiés', value:String(k.total), sub:Math.round(k.total/k.budget*100)+'% du budget', color:CIH.blue, icon:'🔍'},
     {label:'Livrés', value:String(k.livres), sub:Math.round(k.livres/k.total*100)+'% achevés', color:CIH.green, icon:'✓'},
   ];
@@ -700,14 +1324,6 @@ setInterval(() => {
   const el = document.querySelector('.sbar .time');
   if (el) el.textContent = getTime();
 }, 30000);
-</script>
-
-<script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js').catch(() => {});
-  });
-}
 </script>
 </body>
 </html>
